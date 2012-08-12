@@ -1,0 +1,2 @@
+# cat=general; type=boolean; label=Enable percentage calculation
+enablePercentageCalculation = 0
