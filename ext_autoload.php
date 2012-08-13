@@ -3,7 +3,7 @@
 // This file was generated on 2012-08-12 17:00
 
 $extensionPath = t3lib_extMgm::extPath('workspaces_performance');
-$extensionClassesPath = $extensionPath . 'classes/';
+$extensionClassesPath = $extensionPath . 'Classes/';
 return array(
 	'tx_workspacesperformance_configuration_backendconfigurationmanager' => $extensionClassesPath . 'Configuration&/BackendConfigurationManager.php',
 	'tx_workspacesperformance_utility_pageutility' => $extensionClassesPath . 'Utility/PageUtility.php',
