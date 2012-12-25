@@ -42,10 +42,53 @@ class Tx_WorkspacesPerformance_Utility_PageUtility implements t3lib_Singleton {
 	protected $paths = array();
 
 	/**
+	 * @var string
+	 */
+	protected $fieldList;
+
+	/**
 	 * @return Tx_WorkspacesPerformance_Utility_PageUtility
 	 */
 	public static function getInstance() {
 		return t3lib_div::makeInstance('Tx_WorkspacesPerformance_Utility_PageUtility');
+	}
+
+	/**
+	 * Creates this object.
+	 *
+	 * Prior to TYPO3 4.7 the t3ver_swapmode field was available
+	 * and will be set to the list of fields to be fetched.
+	 *
+	 * @see http://review.typo3.org/12552
+	 */
+	public function __construct() {
+		$fieldList = 'uid,pid,tstamp,sorting,deleted,hidden,doktype,' .
+			't3ver_oid,t3ver_id,t3ver_wsid,t3ver_label,t3ver_state,t3ver_stage,t3ver_count,t3ver_tstamp,t3ver_move_id,t3_origuid,' .
+			'perms_userid,perms_groupid,perms_user,perms_group,perms_everybody';
+
+		if ($this->getVersionInteger(TYPO3_version) < $this->getVersionInteger('4.7.0')) {
+			$fieldList .= ',t3ver_swapmode';
+		}
+
+		$this->setFieldList($fieldList);
+	}
+
+	/**
+	 * Sets the list of fields to be fetched.
+	 *
+	 * @param string $fieldList
+	 */
+	public function setFieldList($fieldList) {
+		$this->fieldList = (string) $fieldList;
+	}
+
+	/**
+	 * Gets the list of fields to be fetched.
+	 *
+	 * @return string
+	 */
+	public function getFieldList() {
+		return $this->fieldList;
 	}
 
 	/**
@@ -164,7 +207,7 @@ class Tx_WorkspacesPerformance_Utility_PageUtility implements t3lib_Singleton {
 	protected function findAll($permissionClause = '1=1') {
 		if (!isset($this->pages[$permissionClause])) {
 			$this->pages[$permissionClause] = $this->getDatabase()->exec_SELECTgetRows(
-				'*',
+				$this->getFieldList(),
 				'pages',
 				$permissionClause . t3lib_BEfunc::deleteClause('pages'),
 				'',
@@ -179,6 +222,16 @@ class Tx_WorkspacesPerformance_Utility_PageUtility implements t3lib_Singleton {
 		}
 
 		return $this->pages[$permissionClause];
+	}
+
+	/**
+	 * Gets a version string as integer representation.
+	 *
+	 * @param string $versionString
+	 * @return integer
+	 */
+	protected function getVersionInteger($versionString) {
+		return t3lib_utility_VersionNumber::convertVersionNumberToInteger($versionString);
 	}
 
 	/**
